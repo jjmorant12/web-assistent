@@ -1,0 +1,4 @@
+streamlit>=1.40.1,<2
+python-tds>=1.16.0
+PyMuPDF>=1.24.0
+matplotlib>=3.8.0

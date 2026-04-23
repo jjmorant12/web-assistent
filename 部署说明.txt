@@ -1,0 +1,44 @@
+上市公司财报智能问数系统 - Web 部署说明
+
+一、运行模式
+1. 部署演示模式（无数据库）
+   - 默认模式。
+   - 不连接 SQL Server。
+   - 任务一使用 financial_data_processor_nodb.py 解析 PDF 并导出 JSON/XLSX；如果部署环境没有 PDF 数据目录，则展示 deploy_data 中随项目打包的真实演示结果。
+   - 任务二读取 result_2.json / result_2.xlsx 和 result 目录中的图表。
+   - 任务三读取 result_3.json / result_3.xlsx 和 result 目录中的参考图片。
+
+2. 本地完整模式（SQL Server）
+   - 在左侧运行模式中手动切换。
+   - 需要本机 SQL Server 可连接。
+   - 继续复用原任务一、任务二、任务三逻辑。
+
+二、本地启动
+在当前目录执行：
+
+python -m pip install -r requirements.txt
+streamlit run app.py
+
+浏览器打开：
+http://localhost:8501
+
+三、部署到 Streamlit Community Cloud
+1. 将本目录上传到 GitHub 仓库。
+2. Streamlit Community Cloud 新建应用。
+3. 入口文件填写：
+app.py
+4. requirements.txt 保持在仓库根目录。
+5. 默认会进入“部署演示模式（无数据库）”，无需配置 SQL Server。
+
+四、数据路径配置
+data_paths.py 会基于当前项目位置自动推导数据目录：
+- 默认数据根目录：项目上一级目录 / 泰迪杯B题 / B题-示例数据 / 示例数据
+- 可通过环境变量 TAIDIBEI_DATA_ROOT 覆盖数据根目录
+
+云端如果没有上传完整 PDF 数据目录，也不会影响页面启动；任务一会使用 deploy_data 中的真实演示结果。
+
+五、提交前检查
+1. 确认 app.py、data_paths.py、financial_data_processor_nodb.py 可以编译。
+2. 确认 result_2.json、result_2.xlsx、result_3.json、result_3.xlsx 存在。
+3. 确认 result 目录中的图片存在。
+4. 如需演示任务一无数据库提取，请确认 deploy_data/task1_result_nodb.json 和 deploy_data/task1_result_nodb.xlsx 存在。
