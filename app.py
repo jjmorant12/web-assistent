@@ -24,6 +24,7 @@ RESULT_DIR = BASE_DIR / "result"
 TASK3_RESULT_JSON = BASE_DIR / "result_3.json"
 TASK2_RESULT_JSON = BASE_DIR / "result_2.json"
 DEFAULT_TASK1_PDF_DIR = ATTACHMENT2_REPORTS_ROOT
+DEFAULT_TASK1_PDF_DISPLAY = "财务报告"
 DEPLOY_DATA_DIR = BASE_DIR / "deploy_data"
 TASK1_DEMO_JSON = DEPLOY_DATA_DIR / "task1_result_nodb.json"
 TASK1_DEMO_XLSX = DEPLOY_DATA_DIR / "task1_result_nodb.xlsx"
@@ -132,6 +133,13 @@ def find_demo_answer(question: str, answer_data: Dict[str, Any]) -> Optional[Dic
         if normalized_question in item.get("Q", "") or item.get("Q", "") in normalized_question:
             return item
     return None
+
+
+def resolve_task1_pdf_dir(display_value: str) -> Path:
+    normalized = (display_value or "").strip()
+    if normalized in {"", DEFAULT_TASK1_PDF_DISPLAY, "示例数据 / 附件2：财务报告"}:
+        return Path(DEFAULT_TASK1_PDF_DIR)
+    return Path(normalized)
 
 
 def get_task2_assistant(
@@ -253,7 +261,7 @@ def render_task1_page(db_config: Dict[str, Any], use_db: bool):
     else:
         st.caption("部署演示模式：不连接 SQL Server，解析 PDF 后导出 JSON/XLSX；如果云端未打包 PDF，则展示内置演示结果。")
 
-    pdf_dir = st.text_input("PDF 目录路径", value=str(DEFAULT_TASK1_PDF_DIR))
+    pdf_dir_display = st.text_input("PDF 目录路径", value=DEFAULT_TASK1_PDF_DISPLAY)
     max_files = 1
     if not use_db:
         max_files = st.number_input("演示处理文件数", min_value=1, max_value=20, value=1, step=1)
@@ -268,9 +276,10 @@ def render_task1_page(db_config: Dict[str, Any], use_db: bool):
         st.rerun()
 
     if start:
+        pdf_dir = resolve_task1_pdf_dir(pdf_dir_display)
         if use_db:
             with st.spinner("正在执行任务一入库，请稍候..."):
-                result = run_task1_ingest(pdf_dir, db_config)
+                result = run_task1_ingest(str(pdf_dir), db_config)
         else:
             pdf_path = Path(pdf_dir)
             if pdf_path.exists():
