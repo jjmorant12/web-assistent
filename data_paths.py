@@ -13,8 +13,9 @@ def _env_path(name: str):
     return Path(value).expanduser()
 
 
-SAMPLE_DATA_ROOT = PROJECT_ROOT / "泰迪杯B题" / "B题-示例数据" / "示例数据"
-FORMAL_DATA_ROOT = PROJECT_ROOT / "泰迪杯B题" / "全部数据" / "正式数据"
+DATA_BASE_DIR = PROJECT_ROOT / "data"
+SAMPLE_DATA_ROOT = DATA_BASE_DIR / "B题-示例数据" / "示例数据"
+FORMAL_DATA_ROOT = DATA_BASE_DIR / "全部数据" / "正式数据"
 DATA_ROOT = _env_path("TAIDIBEI_DATA_ROOT") or SAMPLE_DATA_ROOT
 
 
